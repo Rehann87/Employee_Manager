@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>bootstrap table</title>
+   </head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+   <style type="text/css">
+      .form-control {
+      display: block;
+      width: 100%;
+      font-size: 1rem;
+      }
+      .manage-heading {
+      padding: 16px 20px;
+      background: #435d7d;
+      border-radius: 3px 3px 0 0;
+      color: white;
+      } 
+      table{
+      width: 100%
+      }
+   </style>
+   <body>
+      <div class="bd-example" style="display: none;" id="add-emp-form">
+         <div class="container mt-4 font-sans-serif">
+            <div class="form">
+               <h2>
+                  <b class="text-info" id="add-edit-heading">ADD</b>
+                  Employee
+               </h2>
+               <div class="form-row mt-3">
+                  <div class="form-group col-md-6">
+                     <label for="employeeName col-md-6">Name</label>
+                     <input type="text" class="form-control" id="employeeName" placeholder="Name" required="true">
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label for="employeeEmail">Email</label>
+                     <input type="Email" class="form-control" id="employeeEmail" placeholder="Email" required="true">
+                  </div>
+               </div>
+               <div class="form-row">
+                  <div class="form-group col-md-6">
+                     <label for="employeeAddress">Address</label>
+                     <input type="address" class="form-control" id="employeeAddress" placeholder="Address" required="true">
+                  </div>
+                  <div class="form-group col-md-6">
+                     <label for="employeeMobile">Mobile</label>
+                     <input type="number" class="form-control" id="employeeMobile" placeholder="Mobile Number" required="true">
+                  </div>
+                  <input type="hidden" name="" id="emp-index" required="true">
+                  <div class="mt-2">
+                     <button type="button" onclick="addEmployeeForm('hide')" class="btn btn-danger">Cancel</button>
+                     <button type="submit" id="add-edit-btn" onclick="addEmployee()" class="btn btn-primary">Add</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+
+   <div class="container-xl mt-5 font-sans-serif" >
+    <div class ="table table-wrapper ">
+       <div class="table-tittle">
+         <div class="manage-heading d-flex justify-content-between align-items-center">
+             <h2>Manage
+                  <b>Employees</b>
+             </h2>
+               <div class="d-flex align-items-center">
+                  <a href="#" onclick="form('Delete')" class="btn btn-danger mr-3">
+                  <i class="fa-solid fa-circle-minus"></i>
+                  Delete</a>
+                  <a href="javascript:void(0)" onclick="addEmployeeForm('show')" class="btn btn-success">
+                  <i class="fa-solid fa-circle-plus"></i>
+                  Add New Employee
+                  </a>
+               </div>
+            </div>
+            <div class="table table-stripped table-hover m-6 border">
+               <table class="border">
+                  <thead>
+                     <th>
+                        <div class="form-check form-check-inline">
+                           <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                           <label class="form-check-label" for="inlineCheckbox1"></label>
+                     </th>
+                     <th>S.N</th>
+                     <th>Name</th>
+                     <th>Address</th>
+                     <th>Email</th>
+                     <th>Phone</th>
+                     <th>Actions</th>
+                  </thead>
+                  <tbody id="table-data">
+                  </tbody>
+               </table>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
+
+<script type="text/javascript">
+   var addEmployeesArr = [];
+   var tblHtml = ``;
+   function addEmployee() {
+        var employeeName = document.getElementById('employeeName').value;
+        var employeeEmail = document.getElementById('employeeEmail').value;
+        var employeeMobile = document.getElementById('employeeMobile').value;
+        var employeeAddress = document.getElementById('employeeAddress').value;
+        var index = document.getElementById('emp-index').value;
+        
+            // Validation checks
+            if (!employeeName || !employeeEmail || !employeeMobile || !employeeAddress) {
+                alert("All fields are required.");
+                return;
+            }
+
+            // Email format validation
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(employeeEmail)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            // Mobile number length validation (adjust as necessary)
+            if (employeeMobile.length < 10 || isNaN(employeeMobile)) {
+                alert("Please enter a valid mobile number (at least 10 digits).");
+                return;
+            }
+
+        if(index == ''){
+          var empObj = {
+              'name' : employeeName,
+              'email' : employeeEmail,
+              'mobile' : employeeMobile,
+              'address' : employeeAddress,
+          };
+          
+          
+          addEmployeesArr.push(empObj);
+          console.log(addEmployeesArr,'add')
+          tableShow();
+          document.getElementById('employeeName').value = '';
+          document.getElementById('employeeEmail').value = '';
+          document.getElementById('employeeMobile').value = '';
+          document.getElementById('employeeAddress').value = '';
+         }else{
+          index = parseInt(index);
+          addEmployeesArr[index].name = employeeName;
+          addEmployeesArr[index].email = employeeEmail;
+          addEmployeesArr[index].mobile = employeeMobile;
+          addEmployeesArr[index].address = employeeAddress;
+          tableShow();
+         }  
+   }
+
+
+   function addEmployeeForm(type) {
+    document.getElementById('add-edit-btn').innerText = 'Add';
+    document.getElementById('add-edit-heading').innerText = 'ADD';
+      var addForm = document.getElementById('add-emp-form');
+      if(type == 'show'){
+         addForm.style.display = 'block';   
+      }else{
+         addForm.style.display = 'none';
+      }
+   }
+
+  
+   function tableShow(){
+    var html = '';
+        for (var i = 0; i < addEmployeesArr.length; i++){
+            html += `
+                <tr>
+                      <td>
+                           <div class="form-check form-check-inline">
+                               <input class="form-check-input" type="checkbox" id="inlineCheckbox1"
+                               value="option1">
+                              <label class="form-check-label" for="inlineCheckbox1"></label>
+                          </div>
+                        </td>
+                        <td>`+(i+1)+`</td>
+                        <td>`+addEmployeesArr[i].name+`</td>
+                        <td>`+addEmployeesArr[i].address+`</td>
+                        <td>`+addEmployeesArr[i].email+`</td>
+                        <td>`+addEmployeesArr[i].mobile+`</td>
+                        <td>
+                          <i class="fa-solid fa-pencil mr-3 text-warning" onclick="editRow(`+i+`)"></i>
+                          <i class="fa-solid fa-trash text-danger" onclick="deleteRow(`+i+`)"></i>
+                        </td>
+                      </tr>`;
+         }
+
+         document.getElementById('table-data').innerHTML = html;
+   }
+
+   function deleteRow(index){
+    if(confirm('Are you sure you want to delete this row?')){
+        addEmployeesArr.splice(index,1);
+        tableShow();
+        console.log(addEmployeesArr,'remove')
+    }
+   }
+
+   function editRow(index){
+      document.getElementById('add-edit-btn').innerText = 'Update';
+      document.getElementById('add-edit-heading').innerText = 'UPDATE';
+
+      document.getElementById('employeeName').value = addEmployeesArr[index].name;
+      document.getElementById('employeeEmail').value = addEmployeesArr[index].email;
+      document.getElementById('employeeMobile').value = addEmployeesArr[index].mobile;
+      document.getElementById('employeeAddress').value = addEmployeesArr[index].address;
+      document.getElementById('emp-index').value = index;
+   }
+</script>
+
+
